@@ -1,0 +1,87 @@
+// Gym Analytics — local SQLite schema
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model MuscleGroup {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+  exercises ExerciseMuscleGroup[]
+}
+
+model Exercise {
+  id          Int      @id @default(autoincrement())
+  name        String
+  equipment   String?  // e.g. "Barbell", "Dumbbell", "Cable", "Machine"
+  isCustom    Boolean  @default(false)
+  hidden      Boolean  @default(false) // user hid this built-in exercise
+  basedOnId   Int?     // clone muscle mapping from this exercise (for custom)
+  basedOn     Exercise?  @relation("ExerciseBasedOn", fields: [basedOnId], references: [id])
+  customClones Exercise[] @relation("ExerciseBasedOn")
+  muscleGroups ExerciseMuscleGroup[]
+  templateExercises TemplateExercise[]
+  workoutExercises  WorkoutExercise[]
+}
+
+model ExerciseMuscleGroup {
+  exerciseId    Int
+  muscleGroupId Int
+  isPrimary     Boolean @default(true) // primary vs secondary muscle
+  exercise      Exercise    @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  muscleGroup   MuscleGroup @relation(fields: [muscleGroupId], references: [id], onDelete: Cascade)
+  @@id([exerciseId, muscleGroupId])
+}
+
+model Template {
+  id        Int      @id @default(autoincrement())
+  name      String   // e.g. "Chest & Tris", "Back & Biceps"
+  exercises TemplateExercise[]
+  workouts  Workout[]
+}
+
+model TemplateExercise {
+  templateId Int
+  exerciseId Int
+  order      Int     // order within template
+  template   Template @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  exercise   Exercise  @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  @@id([templateId, exerciseId])
+}
+
+model Workout {
+  id         Int      @id @default(autoincrement())
+  date       DateTime // workout date (stored as ISO date)
+  bodyWeight Float?   // once per day
+  templateId Int?
+  notes      String?
+  template   Template? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  exercises  WorkoutExercise[]
+}
+
+model WorkoutExercise {
+  id         Int   @id @default(autoincrement())
+  workoutId  Int
+  exerciseId Int
+  order      Int
+  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  sets       WorkoutSet[]
+}
+
+model WorkoutSet {
+  id               Int   @id @default(autoincrement())
+  workoutExerciseId Int
+  setIndex         Int   // 1-based set number
+  reps             Int
+  weight           Float // lbs or kg — app assumes one unit
+  rpe              Float? // rate of perceived exertion 1-10
+  restSeconds      Int?
+  workoutExercise  WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+}

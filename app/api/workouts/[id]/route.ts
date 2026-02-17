@@ -1,0 +1,34 @@
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const id = Number((await params).id);
+  if (Number.isNaN(id)) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
+  try {
+    const workout = await prisma.workout.findUnique({
+      where: { id },
+      include: {
+        template: true,
+        exercises: {
+          include: { exercise: true, sets: true },
+          orderBy: { order: "asc" },
+        },
+      },
+    });
+    if (!workout) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    return NextResponse.json(workout);
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json(
+      { error: "Failed to fetch workout" },
+      { status: 500 }
+    );
+  }
+}
