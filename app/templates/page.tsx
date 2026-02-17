@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
 
 type Template = {
   id: number;
@@ -12,20 +14,30 @@ type Template = {
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchTemplates = () => {
+    setLoading(true);
+    setError(null);
+    fetch("/api/templates")
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load templates");
+        return r.json();
+      })
+      .then(setTemplates)
+      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    fetch("/api/templates")
-      .then((r) => r.json())
-      .then(setTemplates)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    fetchTemplates();
   }, []);
 
   const deleteTemplate = async (id: number, name: string) => {
     if (!confirm(`Delete template "${name}"?`)) return;
     try {
       const res = await fetch(`/api/templates/${id}`, { method: "DELETE" });
-      if (res.ok) setTemplates((prev) => prev.filter((t) => t.id !== id));
+      if (res.ok) setTemplates((prev) => prev.filter((t) => t.id !== id)); else setError("Failed to delete");
     } catch (e) {
       console.error(e);
     }
@@ -46,7 +58,12 @@ export default function TemplatesPage() {
         Use templates to quickly start a workout (e.g. Chest & Tris, Back & Biceps).
       </p>
       {loading ? (
-        <p className="text-zinc-500">Loading...</p>
+        <div className="flex items-center gap-2 text-zinc-500">
+          <LoadingSpinner />
+          <span>Loading templates…</span>
+        </div>
+      ) : error ? (
+        <ErrorMessage message={error} onRetry={fetchTemplates} />
       ) : templates.length === 0 ? (
         <p className="text-zinc-500">No templates yet. Create one to get started.</p>
       ) : (

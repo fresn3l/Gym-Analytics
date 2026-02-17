@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
 
 type MuscleGroup = { id: number; name: string };
 type ExerciseMuscleGroup = { muscleGroup: MuscleGroup; isPrimary: boolean };
@@ -18,6 +20,7 @@ export default function ExercisesPage() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [muscleGroups, setMuscleGroups] = useState<MuscleGroup[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filterMuscle, setFilterMuscle] = useState<string>("");
   const [search, setSearch] = useState("");
   const [includeHidden, setIncludeHidden] = useState(false);
@@ -29,17 +32,25 @@ export default function ExercisesPage() {
       .catch(console.error);
   }, []);
 
-  useEffect(() => {
+  const fetchExercises = () => {
     setLoading(true);
+    setError(null);
     const params = new URLSearchParams();
     if (filterMuscle) params.set("muscleGroupId", filterMuscle);
     if (search) params.set("search", search);
     if (includeHidden) params.set("includeHidden", "true");
     fetch(`/api/exercises?${params}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load exercises");
+        return r.json();
+      })
       .then(setExercises)
-      .catch(console.error)
+      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchExercises();
   }, [filterMuscle, search, includeHidden]);
 
   const toggleHidden = async (id: number, hidden: boolean) => {
@@ -102,7 +113,12 @@ export default function ExercisesPage() {
       </div>
 
       {loading ? (
-        <p className="text-zinc-500">Loading...</p>
+        <div className="flex items-center gap-2 text-zinc-500">
+          <LoadingSpinner />
+          <span>Loading exercises…</span>
+        </div>
+      ) : error ? (
+        <ErrorMessage message={error} onRetry={fetchExercises} />
       ) : (
         <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
           {exercises.map((ex) => (

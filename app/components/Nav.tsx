@@ -10,6 +10,7 @@ const links = [
   { href: "/templates", label: "Templates" },
   { href: "/exercises", label: "Exercises" },
   { href: "/analytics", label: "Analytics" },
+  { href: "/settings", label: "Settings" },
 ];
 
 export default function Nav() {

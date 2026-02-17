@@ -60,7 +60,8 @@ Local-first workout tracker and analytics app. Log workouts, use templates (e.g.
 - **Templates**: Create named templates (e.g. Chest & Tris) with an ordered list of exercises; apply a template when logging a workout.
 - **Log workout**: Date, body weight (once per day), exercises and sets (reps, weight). Start from a template or add exercises manually.
 - **Workout history**: List and view past workouts with volume per exercise.
-- **Analytics**: Body weight over time (workout + rest-day log), total volume per week, **volume by muscle group** (stacked bar per week), **most/least trained muscle groups**, **per-exercise progress** (volume + estimated 1RM over time, Epley formula).
+- **Analytics**: Body weight over time (workout + rest-day log), total volume per week, volume by muscle group, most/least trained muscle groups, per-exercise progress (volume + estimated 1RM).
+- **Settings**: Theme (light / dark / system), export all data as **JSON** or **CSV** for backup.
 
 ## Project structure
 
@@ -72,6 +73,4 @@ Local-first workout tracker and analytics app. Log workouts, use templates (e.g.
 
 ## Future
 
-- Phase 2: Deeper analytics (volume by muscle group, per-exercise progress, estimated 1RM).
-- Phase 3: Polish, export (CSV/JSON).
-- Later: Daily calorie/macro logging and nutrition analytics.
+- Daily calorie/macro logging and nutrition analytics.

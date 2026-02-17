@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
 
 type Workout = {
   id: number;
@@ -17,13 +19,23 @@ type Workout = {
 export default function WorkoutsPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchWorkouts = () => {
+    setLoading(true);
+    setError(null);
+    fetch("/api/workouts")
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load workouts");
+        return r.json();
+      })
+      .then((data: { workouts: Workout[] }) => setWorkouts(data.workouts ?? []))
+      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    fetch("/api/workouts")
-      .then((r) => r.json())
-      .then((data: { workouts: Workout[] }) => setWorkouts(data.workouts ?? []))
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    fetchWorkouts();
   }, []);
 
   const formatDate = (d: string) => {
@@ -55,7 +67,12 @@ export default function WorkoutsPage() {
         </Link>
       </div>
       {loading ? (
-        <p className="text-zinc-500">Loading...</p>
+        <div className="flex items-center gap-2 text-zinc-500">
+          <LoadingSpinner />
+          <span>Loading workouts…</span>
+        </div>
+      ) : error ? (
+        <ErrorMessage message={error} onRetry={fetchWorkouts} />
       ) : workouts.length === 0 ? (
         <p className="text-zinc-500">No workouts yet. Log your first workout to get started.</p>
       ) : (

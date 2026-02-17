@@ -53,6 +53,15 @@ export default function Home() {
             Body weight over time, volume per week, progress by exercise.
           </p>
         </Link>
+        <Link
+          href="/settings"
+          className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 transition hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-800"
+        >
+          <span className="font-medium">Settings</span>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            Theme (light/dark/system), export data (JSON/CSV).
+          </p>
+        </Link>
       </div>
     </div>
   );
