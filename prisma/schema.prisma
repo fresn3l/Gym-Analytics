@@ -85,3 +85,10 @@ model WorkoutSet {
   restSeconds      Int?
   workoutExercise  WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
 }
+
+// Log body weight on rest days (no workout); merged with Workout.bodyWeight in analytics
+model BodyWeightLog {
+  id     Int     @id @default(autoincrement())
+  date   DateTime // date of log
+  weight Float
+}

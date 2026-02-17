@@ -44,10 +44,10 @@
 ---
 
 ## Phase 2 — Deeper analytics
-- [ ] Volume by muscle group (per week/month)
-- [ ] Most/least trained muscle groups
-- [ ] Per-exercise: volume over time, averages, estimated 1RM trend
-- [ ] Optional: BodyWeightLog for rest days
+- [x] Volume by muscle group (per week) — stacked bar chart
+- [x] Most/least trained muscle groups — summary list
+- [x] Per-exercise: volume over time, estimated 1RM trend (Epley formula)
+- [x] BodyWeightLog for rest days; merge with workout body weight in chart
 
 ---
 
