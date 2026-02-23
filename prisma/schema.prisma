@@ -92,3 +92,15 @@ model BodyWeightLog {
   date   DateTime // date of log
   weight Float
 }
+
+// Daily calorie/macro intake (Phase 4 — Nutrition)
+model DailyNutrition {
+  id          Int      @id @default(autoincrement())
+  date        DateTime // one log per day
+  calories    Float?   // kcal
+  proteinGrams Float?
+  carbsGrams  Float?
+  fatGrams    Float?
+  notes       String?
+  @@unique([date])
+}

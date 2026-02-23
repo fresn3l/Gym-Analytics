@@ -35,7 +35,7 @@ A local-first workout tracker and analytics app built with **Next.js** and **SQL
 ### Optional / future
 
 - **BodyWeightLog** — Separate `(date, weight)` for logging weight on rest days (Phase 2+).
-- **Calorie / nutrition** — Future phase; same app, new models and UI section.
+- **DailyNutrition** — One row per day: `date`, `calories`, `proteinGrams`, `carbsGrams`, `fatGrams`, `notes` (Phase 4).
 
 ### Design decisions
 
@@ -108,10 +108,13 @@ A local-first workout tracker and analytics app built with **Next.js** and **SQL
 
 ---
 
-### Future — Nutrition
+### Phase 4 — Nutrition ✅
 
-- Daily calorie/macro logging; same app, new section.
-- Analytics: intake over time, averages, correlation with body weight (if desired).
+- **DailyNutrition** model: one log per day (date unique); calories, protein/carbs/fat grams, notes.
+- **API:** GET/POST `/api/nutrition` (list with from/to, upsert by date); GET `/api/nutrition/[date]`.
+- **Nutrition page:** Log form (date, calories, P/C/F, notes); recent entries with Edit (re-fill form).
+- **Analytics:** `nutritionOverTime` — calories and macros over time; chart on Analytics page with link to Nutrition.
+- **Export:** JSON export includes `dailyNutrition`.
 
 ---
 

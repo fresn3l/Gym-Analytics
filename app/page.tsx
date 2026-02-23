@@ -45,12 +45,21 @@ export default function Home() {
           </p>
         </Link>
         <Link
+          href="/nutrition"
+          className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 transition hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-800"
+        >
+          <span className="font-medium">Nutrition</span>
+          <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+            Daily calories and macros (protein, carbs, fat); view trends in Analytics.
+          </p>
+        </Link>
+        <Link
           href="/analytics"
-          className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 transition hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-800 sm:col-span-2"
+          className="rounded-lg border border-zinc-200 bg-zinc-50 p-4 transition hover:border-zinc-300 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700 dark:hover:bg-zinc-800"
         >
           <span className="font-medium">Analytics</span>
           <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-            Body weight over time, volume per week, progress by exercise.
+            Body weight, volume per week, muscle distribution, nutrition over time.
           </p>
         </Link>
         <Link

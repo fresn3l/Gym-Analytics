@@ -20,6 +20,7 @@ type BodyWeightPoint = { date: string; weight: number };
 type VolumePoint = { date: string; volume: number };
 type MuscleSummaryPoint = { name: string; volume: number };
 type ExerciseProgressPoint = { date: string; volume: number; e1rm: number | null };
+type NutritionPoint = { date: string; calories: number | null; proteinGrams: number | null; carbsGrams: number | null; fatGrams: number | null };
 
 const MUSCLE_COLORS = [
   "#3b82f6",
@@ -47,6 +48,7 @@ export default function AnalyticsPage() {
   const [exerciseList, setExerciseList] = useState<{ name: string; id?: number }[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<string>("");
   const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgressPoint[]>([]);
+  const [nutritionOverTime, setNutritionOverTime] = useState<NutritionPoint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bodyWeightForm, setBodyWeightForm] = useState({ date: "", weight: "" });
@@ -77,6 +79,10 @@ export default function AnalyticsPage() {
           setExerciseList(list.map((e) => ({ name: e.name })))
         )
         .catch(() => setExerciseList([])),
+      fetch("/api/analytics?type=nutritionOverTime")
+        .then((r) => r.json())
+        .then(setNutritionOverTime)
+        .catch(() => setNutritionOverTime([])),
     ])
       .catch(() => setError("Failed to load analytics"))
       .finally(() => setLoading(false));
@@ -403,12 +409,75 @@ export default function AnalyticsPage() {
         </section>
       )}
 
+      {/* Nutrition: calories / macros over time */}
+      {nutritionOverTime.length > 0 && (
+        <section>
+          <h2 className="mb-2 font-medium">Calories & macros over time</h2>
+          <p className="mb-2 text-sm text-zinc-500">
+            Log intake on the <a href="/nutrition" className="underline">Nutrition</a> page.
+          </p>
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={nutritionOverTime}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  className="stroke-zinc-200 dark:stroke-zinc-700"
+                />
+                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "var(--background)",
+                    border: "1px solid var(--foreground)",
+                    borderRadius: "6px",
+                  }}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="calories"
+                  name="Calories (kcal)"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="proteinGrams"
+                  name="Protein (g)"
+                  stroke="#22c55e"
+                  strokeWidth={2}
+                  dot={{ r: 2 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="carbsGrams"
+                  name="Carbs (g)"
+                  stroke="#eab308"
+                  strokeWidth={2}
+                  dot={{ r: 2 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="fatGrams"
+                  name="Fat (g)"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  dot={{ r: 2 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </section>
+      )}
+
       {bodyWeight.length === 0 &&
         volumeByWeek.length === 0 &&
         muscleGroupSummary.length === 0 &&
-        exerciseList.length === 0 && (
+        exerciseList.length === 0 &&
+        nutritionOverTime.length === 0 && (
           <p className="text-zinc-500">
-            No data yet. Log workouts (and body weight) to see analytics here.
+            No data yet. Log workouts, body weight, or nutrition to see analytics here.
           </p>
         )}
     </div>

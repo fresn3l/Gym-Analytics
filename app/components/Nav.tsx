@@ -7,6 +7,7 @@ const links = [
   { href: "/", label: "Dashboard" },
   { href: "/workouts", label: "Workouts" },
   { href: "/log", label: "Log Workout" },
+  { href: "/nutrition", label: "Nutrition" },
   { href: "/templates", label: "Templates" },
   { href: "/exercises", label: "Exercises" },
   { href: "/analytics", label: "Analytics" },

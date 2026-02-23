@@ -61,6 +61,10 @@
 
 ---
 
-## Future — Nutrition
-- [ ] Daily calorie/macro logging
-- [ ] Nutrition analytics
+## Phase 4 — Nutrition ✅
+- [x] DailyNutrition model (date, calories, proteinGrams, carbsGrams, fatGrams, notes); one per day, upsert by date
+- [x] API: GET/POST /api/nutrition (list with optional from/to, upsert); GET /api/nutrition/[date]
+- [x] Analytics: type=nutritionOverTime for calories/macros over time
+- [x] Nutrition page: log form (date, calories, P/C/F, notes), recent entries list, edit by date
+- [x] Analytics page: “Calories & macros over time” chart (link to Nutrition)
+- [x] Nav + dashboard link; export JSON includes dailyNutrition

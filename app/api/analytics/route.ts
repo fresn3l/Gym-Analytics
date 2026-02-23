@@ -205,10 +205,24 @@ export async function GET(request: Request) {
       return NextResponse.json(points);
     }
 
+    if (type === "nutritionOverTime") {
+      const logs = await prisma.dailyNutrition.findMany({
+        orderBy: { date: "asc" },
+      });
+      const data = logs.map((n) => ({
+        date: new Date(n.date).toISOString().slice(0, 10),
+        calories: n.calories,
+        proteinGrams: n.proteinGrams,
+        carbsGrams: n.carbsGrams,
+        fatGrams: n.fatGrams,
+      }));
+      return NextResponse.json(data);
+    }
+
     return NextResponse.json(
       {
         error:
-          "Invalid type. Use bodyWeight, volumeByWeek, volumeByExercise, volumeByMuscleGroup, muscleGroupSummary, or exerciseProgress (with exerciseId or exerciseName)",
+          "Invalid type. Use bodyWeight, volumeByWeek, volumeByExercise, volumeByMuscleGroup, muscleGroupSummary, exerciseProgress (with exerciseId or exerciseName), or nutritionOverTime",
       },
       { status: 400 }
     );

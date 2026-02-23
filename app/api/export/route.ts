@@ -6,7 +6,7 @@ export async function GET(request: Request) {
   const format = searchParams.get("format") ?? "json"; // json | csv
 
   try {
-    const [workouts, templates, exercises, bodyWeightLogs] = await Promise.all([
+    const [workouts, templates, exercises, bodyWeightLogs, dailyNutrition] = await Promise.all([
       prisma.workout.findMany({
         include: {
           template: true,
@@ -34,6 +34,7 @@ export async function GET(request: Request) {
         },
       }),
       prisma.bodyWeightLog.findMany({ orderBy: { date: "asc" } }),
+      prisma.dailyNutrition.findMany({ orderBy: { date: "asc" } }),
     ]);
 
     const workoutsSerialized = workouts.map((w) => ({
@@ -60,6 +61,15 @@ export async function GET(request: Request) {
     const bodyWeightSerialized = bodyWeightLogs.map((l) => ({
       date: new Date(l.date).toISOString().slice(0, 10),
       weight: l.weight,
+    }));
+
+    const nutritionSerialized = dailyNutrition.map((n) => ({
+      date: new Date(n.date).toISOString().slice(0, 10),
+      calories: n.calories,
+      proteinGrams: n.proteinGrams,
+      carbsGrams: n.carbsGrams,
+      fatGrams: n.fatGrams,
+      notes: n.notes,
     }));
 
     if (format === "csv") {
@@ -107,6 +117,7 @@ export async function GET(request: Request) {
         muscleGroups: e.muscleGroups.map((mg) => ({ name: mg.muscleGroup.name, isPrimary: mg.isPrimary })),
       })),
       bodyWeightLogs: bodyWeightSerialized,
+      dailyNutrition: nutritionSerialized,
     };
     return NextResponse.json(json, {
       headers: {
