@@ -13,6 +13,8 @@ import {
   Bar,
   Legend,
 } from "recharts";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
 
 type BodyWeightPoint = { date: string; weight: number };
 type VolumePoint = { date: string; volume: number };
@@ -46,6 +48,7 @@ export default function AnalyticsPage() {
   const [selectedExercise, setSelectedExercise] = useState<string>("");
   const [exerciseProgress, setExerciseProgress] = useState<ExerciseProgressPoint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [bodyWeightForm, setBodyWeightForm] = useState({ date: "", weight: "" });
   const [savingWeight, setSavingWeight] = useState(false);
 
@@ -54,7 +57,9 @@ export default function AnalyticsPage() {
       .then((r) => r.json())
       .then(setBodyWeight);
 
-  useEffect(() => {
+  const loadAnalytics = () => {
+    setLoading(true);
+    setError(null);
     Promise.all([
       fetchBodyWeight(),
       fetch("/api/analytics?type=volumeByWeek").then((r) => r.json()).then(setVolumeByWeek),
@@ -73,8 +78,12 @@ export default function AnalyticsPage() {
         )
         .catch(() => setExerciseList([])),
     ])
-      .catch(console.error)
+      .catch(() => setError("Failed to load analytics"))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadAnalytics();
   }, []);
 
   useEffect(() => {
@@ -117,7 +126,22 @@ export default function AnalyticsPage() {
     }
   };
 
-  if (loading) return <p className="text-zinc-500">Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 text-zinc-500">
+        <LoadingSpinner />
+        <span>Loading analytics…</span>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-semibold">Analytics</h1>
+        <ErrorMessage message={error} onRetry={loadAnalytics} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-10">

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "../components/LoadingSpinner";
+import ErrorMessage from "../components/ErrorMessage";
 
 type Exercise = { id: number; name: string };
 type Template = {
@@ -29,15 +31,32 @@ export default function LogWorkoutPage() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
   const [logExercises, setLogExercises] = useState<LogExercise[]>([]);
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadData = () => {
+    setLoading(true);
+    setError(null);
+    Promise.all([
+      fetch("/api/templates").then((r) => {
+        if (!r.ok) throw new Error("Failed to load templates");
+        return r.json();
+      }),
+      fetch("/api/exercises").then((r) => {
+        if (!r.ok) throw new Error("Failed to load exercises");
+        return r.json();
+      }),
+    ])
+      .then(([t, ex]) => {
+        setTemplates(t);
+        setExercises(ex);
+      })
+      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/templates").then((r) => r.json()),
-      fetch("/api/exercises").then((r) => r.json()),
-    ]).then(([t, ex]) => {
-      setTemplates(t);
-      setExercises(ex);
-    });
+    loadData();
   }, []);
 
   const applyTemplate = () => {
@@ -143,6 +162,23 @@ export default function LogWorkoutPage() {
       setSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 text-zinc-500">
+        <LoadingSpinner />
+        <span>Loading templates and exercises…</span>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-semibold">Log Workout</h1>
+        <ErrorMessage message={error} onRetry={loadData} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

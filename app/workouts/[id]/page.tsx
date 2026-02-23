@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import ErrorMessage from "../../components/ErrorMessage";
 
 type Workout = {
   id: number;
@@ -21,17 +23,44 @@ export default function WorkoutDetailPage() {
   const id = params.id as string;
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchWorkout = () => {
+    if (!id) return;
+    setLoading(true);
+    setError(null);
+    fetch(`/api/workouts/${id}`)
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to load workout");
+        return r.json();
+      })
+      .then(setWorkout)
+      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load"))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    if (!id) return;
-    fetch(`/api/workouts/${id}`)
-      .then((r) => r.json())
-      .then(setWorkout)
-      .catch(console.error)
-      .finally(() => setLoading(false));
+    fetchWorkout();
   }, [id]);
 
-  if (loading) return <p className="text-zinc-500">Loading...</p>;
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 text-zinc-500">
+        <LoadingSpinner />
+        <span>Loading workout…</span>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="space-y-4">
+        <ErrorMessage message={error} onRetry={fetchWorkout} />
+        <Link href="/workouts" className="text-sm text-zinc-600 hover:underline dark:text-zinc-400">
+          ← Back to history
+        </Link>
+      </div>
+    );
+  }
   if (!workout) return <p className="text-zinc-500">Workout not found.</p>;
 
   const formatDate = (d: string) =>
