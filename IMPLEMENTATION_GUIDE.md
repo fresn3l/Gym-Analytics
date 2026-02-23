@@ -47,7 +47,7 @@ A local-first workout tracker and analytics app built with **Next.js** and **SQL
 
 ## Phases
 
-### Phase 1 — MVP (Current)
+### Phase 1 — MVP ✅
 
 **Goal:** Log workouts, use templates, manage exercise library, view history and basic analytics.
 
@@ -90,20 +90,21 @@ A local-first workout tracker and analytics app built with **Next.js** and **SQL
 
 ---
 
-### Phase 2 — Deeper analytics
+### Phase 2 — Deeper analytics ✅
 
-- Volume by **muscle group** (per week/month); which muscles trained most/least.
-- **Per-exercise** analytics: volume over time, average weight/reps, estimated 1RM trend (e.g. Epley/Brzycki).
-- **Per-workout** averages and totals.
-- Optional: BodyWeightLog for rest days; show on same chart as workout-day body weight.
+- Volume by **muscle group** (per week); stacked bar chart; which muscles trained most/least (summary list).
+- **Per-exercise** analytics: volume over time, estimated 1RM trend (Epley formula).
+- BodyWeightLog for rest days; merged with workout body weight in chart.
 
 ---
 
-### Phase 3 — Polish & export
+### Phase 3 — Polish & export ✅
 
-- UI polish, loading/error states, responsive layout.
-- Export data (CSV/JSON) for backup or external analysis.
-- Optional: dark/light theme, settings page.
+- **UI polish:** LoadingSpinner and ErrorMessage components; loading and error states with retry on all data pages (Workouts, Exercises, Templates, Analytics, Log workout, Workout detail).
+- **Export:** GET `/api/export?format=json|csv`; full backup (workouts, templates, exercises, body weight logs). Settings page: Export JSON / Export CSV buttons.
+- **Theme:** Light / dark / system via ThemeProvider (localStorage); Settings page theme toggle; inline script in layout to avoid flash.
+- **Settings page:** Theme selector + export; linked from Nav and dashboard.
+- **Responsive:** Flex-wrap nav and forms; max-width layout.
 
 ---
 

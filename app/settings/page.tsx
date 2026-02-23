@@ -4,8 +4,6 @@ import { useState } from "react";
 import { useTheme } from "../components/ThemeProvider";
 import LoadingSpinner from "../components/LoadingSpinner";
 
-type Theme = "light" | "dark" | "system";
-
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [exporting, setExporting] = useState<"json" | "csv" | null>(null);

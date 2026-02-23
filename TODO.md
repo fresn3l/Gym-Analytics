@@ -52,10 +52,12 @@
 ---
 
 ## Phase 3 — Polish & export
-- [x] UI polish: LoadingSpinner, ErrorMessage, retry on Workouts/Exercises/Templates
+- [x] UI polish: LoadingSpinner, ErrorMessage, retry on Workouts, Exercises, Templates
+- [x] Loading/error states on Analytics, Log workout, Workout detail (with retry)
 - [x] Export data: GET /api/export?format=json|csv; Settings page Export JSON/CSV buttons
 - [x] Theme (light/dark/system) via ThemeProvider + localStorage; Settings page theme toggle
 - [x] Settings page: theme + export; Nav + dashboard link
+- [x] ESLint: relaxed set-state-in-effect for data-fetch-on-mount; fix unused vars
 
 ---
 

@@ -84,6 +84,7 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     loadAnalytics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loadAnalytics is stable for initial load
   }, []);
 
   useEffect(() => {
@@ -307,7 +308,7 @@ export default function AnalyticsPage() {
             <div className="min-w-[200px] rounded-lg border border-zinc-200 p-3 dark:border-zinc-800">
               <h3 className="text-sm font-medium text-zinc-500">Most trained</h3>
               <ul className="mt-2 space-y-1 text-sm">
-                {muscleGroupSummary.slice(0, 6).map((m, i) => (
+                {muscleGroupSummary.slice(0, 6).map((m) => (
                   <li key={m.name} className="flex justify-between gap-2">
                     <span>{m.name}</span>
                     <span className="font-mono text-zinc-600 dark:text-zinc-400">
